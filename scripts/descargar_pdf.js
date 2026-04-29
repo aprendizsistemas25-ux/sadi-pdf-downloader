@@ -55,32 +55,41 @@ const fechaHasta = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padSta
       pdfBase64 = buffer.toString('base64');
     }
   });
-await page.waitForTimeout(2000);
 
-const [newPage] = await Promise.all([
-  context.waitForEvent('page', { timeout: 15000 }).catch(() => null),
-  page.getByText('Ver PDF').nth(indice + 1).click()
-]);
+  await page.waitForTimeout(2000);
 
-await page.waitForTimeout(5000);
+  const [newPage] = await Promise.all([
+    context.waitForEvent('page', { timeout: 15000 }).catch(() => null),
+    page.getByText('Ver PDF').nth(indice + 1).click()
+  ]);
 
-const targetPage = newPage || page;
-await targetPage.waitForTimeout(3000);
+  await page.waitForTimeout(5000);
 
-if (!pdfBase64) {
-  const iframe = targetPage.frameLocator('iframe').first();
-  const downloadPromise = targetPage.waitForEvent('download', { timeout: 15000 }).catch(() => null);
-  await iframe.getByRole('button', { name: 'Descargar' }).click().catch(() => null);
-  const download = await downloadPromise;
-  if (download) {
-    const stream = await download.createReadStream();
-    const chunks = [];
-    for await (const chunk of stream) chunks.push(chunk);
-    pdfBase64 = Buffer.concat(chunks).toString('base64');
+  const targetPage = newPage || page;
+  await targetPage.waitForTimeout(3000);
+
+  if (!pdfBase64) {
+    const iframe = targetPage.frameLocator('iframe').first();
+    const downloadPromise = targetPage.waitForEvent('download', { timeout: 15000 }).catch(() => null);
+    await iframe.getByRole('button', { name: 'Descargar' }).click().catch(() => null);
+    const download = await downloadPromise;
+    if (download) {
+      const stream = await download.createReadStream();
+      const chunks = [];
+      for await (const chunk of stream) chunks.push(chunk);
+      pdfBase64 = Buffer.concat(chunks).toString('base64');
+    }
   }
-}
 
-if (!pdfBase64) {
-  await targetPage.screenshot({ path: 'output/debug.png' });
-  throw new Error('No se pudo capturar el PDF');
-}
+  if (!pdfBase64) {
+    if (!fs.existsSync('output')) fs.mkdirSync('output');
+    await targetPage.screenshot({ path: 'output/debug.png' });
+    throw new Error('No se pudo capturar el PDF');
+  }
+
+  if (!fs.existsSync('output')) fs.mkdirSync('output');
+  fs.writeFileSync(path.join('output', nombre_archivo + '.pdf'), Buffer.from(pdfBase64, 'base64'));
+  console.log('OK');
+
+  await browser.close();
+})();
