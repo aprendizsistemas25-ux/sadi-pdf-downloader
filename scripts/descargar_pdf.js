@@ -20,16 +20,17 @@ const ultimoDia = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate
   await page.getByRole('textbox', { name: 'Usuario' }).fill(usuario);
   await page.getByRole('textbox', { name: 'Contraseña' }).fill(password);
   await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
-  await page.waitForTimeout(3000);
-
+  await page.waitForTimeout(8000);
+  
   await page.getByText('Recepción', { exact: true }).click();
+  await page.waitForTimeout(3000);
   await page.getByText('Recepción De Documentos De').click();
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(5000);
 
   await page.getByRole('textbox', { name: 'Nit Emisor' }).fill(nit);
-  await page.getByRole('textbox', { name: 'Nit Emisor' }).press('Tab');
 
   await page.getByRole('button', { name: 'fa fa-home' }).first().click();
+  await page.waitForTimeout(2000);
   await page.getByRole('button', { name: primerDia, exact: true }).first().click();
 
   await page.getByRole('button', { name: 'fa fa-home' }).nth(1).click();
