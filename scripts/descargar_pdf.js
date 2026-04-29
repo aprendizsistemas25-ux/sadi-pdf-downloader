@@ -4,12 +4,14 @@ const path = require('path');
 
 const nit = process.argv[2];
 const indice = parseInt(process.argv[3]);
+const nombre_archivo = process.argv[4];
 const usuario = process.env.USUARIO;
 const password = process.env.PASSWORD;
 
 const ahora = new Date();
-const primerDia = '1';
-const ultimoDia = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate().toString();
+const ultimoDia = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate();
+const fechaDesde = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-01`;
+const fechaHasta = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ultimoDia).padStart(2, '0')}`;
 
 (async () => {
   const browser = await chromium.launch({ headless: true });
@@ -21,21 +23,20 @@ const ultimoDia = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate
   await page.getByRole('textbox', { name: 'Contraseña' }).fill(password);
   await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
   await page.waitForTimeout(8000);
-  
+
   await page.getByText('Recepción', { exact: true }).click();
   await page.waitForTimeout(3000);
   await page.getByText('Recepción De Documentos De').click();
   await page.waitForTimeout(5000);
 
   await page.getByRole('textbox', { name: 'Nit Emisor' }).fill(nit);
+  await page.getByRole('textbox', { name: 'Nit Emisor' }).press('Tab');
 
-await page.getByRole('button', { name: 'fa fa-home' }).first().click();
-await page.waitForTimeout(2000);
-await page.locator('button.day, td.day, .datepicker td').filter({ hasText: new RegExp('^' + primerDia + '$') }).first().click();
+  await page.locator('input#fechaDesde').fill(fechaDesde);
+  await page.locator('input#fechaDesde').press('Tab');
 
-await page.getByRole('button', { name: 'fa fa-home' }).nth(1).click();
-await page.waitForTimeout(2000);
-await page.locator('button.day, td.day, .datepicker td').filter({ hasText: new RegExp('^' + ultimoDia + '$') }).first().click();
+  await page.locator('input#fechaHasta').fill(fechaHasta);
+  await page.locator('input#fechaHasta').press('Tab');
 
   await page.getByRole('button', { name: 'Buscar' }).click();
   await page.waitForTimeout(3000);
@@ -72,11 +73,9 @@ await page.locator('button.day, td.day, .datepicker td').filter({ hasText: new R
     pdfBase64 = Buffer.concat(chunks).toString('base64');
   }
 
-  // Guardar en carpeta output para que GitHub Actions lo suba como artefacto
   if (!fs.existsSync('output')) fs.mkdirSync('output');
-  const nombreArchivo = `N_${nit}_FV_${indice}_${ahora.toISOString().split('T')[0].replace(/-/g,'')}.pdf`;
-  fs.writeFileSync(path.join('output', nombreArchivo), Buffer.from(pdfBase64, 'base64'));
-  console.log(nombreArchivo);
+  fs.writeFileSync(path.join('output', nombre_archivo + '.pdf'), Buffer.from(pdfBase64, 'base64'));
+  console.log('OK');
 
   await browser.close();
 })();
