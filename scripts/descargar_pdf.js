@@ -29,12 +29,13 @@ const ultimoDia = new Date(ahora.getFullYear(), ahora.getMonth() + 1, 0).getDate
 
   await page.getByRole('textbox', { name: 'Nit Emisor' }).fill(nit);
 
-  await page.getByRole('button', { name: 'fa fa-home' }).first().click();
-  await page.waitForTimeout(2000);
-  await page.getByRole('button', { name: primerDia, exact: true }).first().click();
+await page.getByRole('button', { name: 'fa fa-home' }).first().click();
+await page.waitForTimeout(2000);
+await page.locator('button.day, td.day, .datepicker td').filter({ hasText: new RegExp('^' + primerDia + '$') }).first().click();
 
-  await page.getByRole('button', { name: 'fa fa-home' }).nth(1).click();
-  await page.getByRole('button', { name: ultimoDia, exact: true }).first().click();
+await page.getByRole('button', { name: 'fa fa-home' }).nth(1).click();
+await page.waitForTimeout(2000);
+await page.locator('button.day, td.day, .datepicker td').filter({ hasText: new RegExp('^' + ultimoDia + '$') }).first().click();
 
   await page.getByRole('button', { name: 'Buscar' }).click();
   await page.waitForTimeout(3000);
