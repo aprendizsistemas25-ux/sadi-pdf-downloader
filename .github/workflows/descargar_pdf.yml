@@ -9,6 +9,9 @@ on:
       indice:
         description: 'Índice de la factura'
         required: true
+      nombre_archivo:
+        description: 'Nombre del archivo PDF'
+        required: true
 
 jobs:
   descargar:
