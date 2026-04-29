@@ -42,7 +42,8 @@ const fechaHasta = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padSta
   await page.waitForTimeout(7000);
 
   await page.getByRole('button', { name: ' Toggle Dropdown' }).nth(indice).click();
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
+  await page.locator('a.dropdown-drop').filter({ hasText: 'Ver PDF' }).first().waitFor({ state: 'visible', timeout: 10000 });
 
   let pdfBase64 = null;
 
@@ -60,7 +61,7 @@ const fechaHasta = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padSta
 
   const [newPage] = await Promise.all([
     context.waitForEvent('page', { timeout: 15000 }).catch(() => null),
-    page.getByText('Ver PDF').nth(indice + 1).click()
+    page.locator('a.dropdown-drop').filter({ hasText: 'Ver PDF' }).first().click()
   ]);
 
   await page.waitForTimeout(5000);
