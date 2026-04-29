@@ -38,7 +38,7 @@ jobs:
           INDICE: ${{ github.event.inputs.indice }}
           USUARIO: ${{ secrets.SIESA_USUARIO }}
           PASSWORD: ${{ secrets.SIESA_PASSWORD }}
-        run: node scripts/descargar_pdf.js "$NIT" "$INDICE"
+        run: node scripts/descargar_pdf.js "$NIT" "$INDICE" "$NOMBRE_ARCHIVO"
 
       - name: Subir PDF como artefacto
         uses: actions/upload-artifact@v4
