@@ -39,10 +39,10 @@ const fechaHasta = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padSta
   await page.locator('input#fechaHasta').press('Tab');
 
   await page.getByRole('button', { name: 'Buscar' }).click();
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(7000);
 
   await page.getByRole('button', { name: ' Toggle Dropdown' }).nth(indice).click();
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
 
   let pdfBase64 = null;
 
