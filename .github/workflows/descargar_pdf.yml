@@ -1,0 +1,45 @@
+name: Descargar PDF SADI
+
+on:
+  workflow_dispatch:
+    inputs:
+      nit:
+        description: 'NIT del emisor'
+        required: true
+      indice:
+        description: 'Índice de la factura'
+        required: true
+
+jobs:
+  descargar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Instalar Chromium de Playwright
+        run: npx playwright install chromium --with-deps
+
+      - name: Ejecutar script
+        env:
+          NIT: ${{ github.event.inputs.nit }}
+          INDICE: ${{ github.event.inputs.indice }}
+          USUARIO: ${{ secrets.SIESA_USUARIO }}
+          PASSWORD: ${{ secrets.SIESA_PASSWORD }}
+        run: node scripts/descargar_pdf.js "$NIT" "$INDICE"
+
+      - name: Subir PDF como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: factura-pdf
+          path: output/*.pdf
+          retention-days: 1
