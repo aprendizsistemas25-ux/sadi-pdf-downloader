@@ -2,6 +2,7 @@
   "name": "sadi-pdf-downloader",
   "version": "1.0.0",
   "dependencies": {
-    "playwright": "^1.43.0"
+    "playwright": "^1.43.0",
+    "jszip": "^3.10.1"
   }
 }
