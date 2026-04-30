@@ -36,6 +36,6 @@ jobs:
       - name: Subir PDF como artefacto
         uses: actions/upload-artifact@v4
         with:
-          name: factura-pdf
+          name: ${{ github.event.inputs.nombre_archivo }}
           path: output/*.pdf
           retention-days: 1
